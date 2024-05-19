@@ -10,12 +10,17 @@ public class PlayerCtrl : MonoBehaviour
     public float moveSpeed = 10.0f;
     public float turnSpeed = 80.0f;
 
-    void Start()
+    IEnumerator Start()
     {
         tr = GetComponent<Transform>();
         anim = GetComponent<Animation>();
 
         anim.Play("Idle");
+
+        turnSpeed = 0.0f;
+        yield return new WaitForSeconds(0.3f);
+        turnSpeed = 80.0f;
+
     }
 
     // Update is called once per frame
