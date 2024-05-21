@@ -49,7 +49,7 @@ public class BarrelCtrl : MonoBehaviour
         // 폭발 효과 파티클 생성
         GameObject exp = Instantiate(expEffect, tr.position, Quaternion.identity);
 
-        Destroy(exp, 3.0f);
+        Destroy(exp, 1.5f);
 
         rb.mass = 1.0f;
         rb.AddForce(Vector3.up * 1500.0f);
@@ -59,14 +59,18 @@ public class BarrelCtrl : MonoBehaviour
 
         Destroy(gameObject, 3.0f);
     }
-
+    Collider[] colls = new Collider[15];
     void IndirectDamage(Vector3 pos)
     {
         // 주변 드럼통 추출
-        Collider[] colls = Physics.OverlapSphere(pos, radius, 1 << 3);
+        Physics.OverlapSphereNonAlloc(pos, radius, colls, 1<<3);
         
         foreach(var coll in colls)
         {
+            if (coll == null)
+            {
+                return;
+            }
             // 폭발 범위에 포함된 드럼통 rb 추출
             rb = coll.GetComponent<Rigidbody>();
 
