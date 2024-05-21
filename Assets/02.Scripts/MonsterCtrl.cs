@@ -89,6 +89,7 @@ public class MonsterCtrl : MonoBehaviour
                 case State.TRACE:
                     // 플레이어한테 추적 시작
                     agent.SetDestination(playerTr.position);
+                    agent.isStopped = false;
                     break;
 
                 case State.ATTACK:
@@ -97,9 +98,9 @@ public class MonsterCtrl : MonoBehaviour
                 case State.DIE:
                     break;
             }
+            yield return new WaitForSeconds(0.3f);
         }
 
-        yield return new WaitForSeconds(0.3f);
     }
 
     void OnDrawGizmos()
