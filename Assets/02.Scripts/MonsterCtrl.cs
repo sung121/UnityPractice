@@ -22,6 +22,12 @@ public class MonsterCtrl : MonoBehaviour
     private Transform monsterTr;
     private Transform playerTr;
     private NavMeshAgent agent;
+    private Animator anim;
+
+    // Animator 파라미터의 해시값 추출
+    private readonly int hashTrace = Animator.StringToHash("isTrace");
+    private readonly int hashAttack = Animator.StringToHash("isAttack");
+    private readonly int hashHit = Animator.StringToHash("Hit");
 
 
     // Start is called before the first frame update
@@ -35,11 +41,27 @@ public class MonsterCtrl : MonoBehaviour
         // NavMeshAgent 컴포넌트 할당
         agent = GetComponent<NavMeshAgent>();
 
+<<<<<<< Updated upstream
         // 추적 대상의 위치를 설정하고 바로 추적 시작;
         agent.destination = playerTr.position;
 
         StartCoroutine(CheckMonsterState());
     
+=======
+        anim = GetComponent<Animator>();
+
+        // 추적 대상의 위치를 destination(목적지)에 설정
+        //agent.destination = playerTr.position;
+
+        StartCoroutine(CheckMonsterState());
+        StartCoroutine(MonsterAction());
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Debug.Log("Update is Called");
+>>>>>>> Stashed changes
     }
 
     IEnumerator CheckMonsterState()
@@ -54,12 +76,54 @@ public class MonsterCtrl : MonoBehaviour
         }
         else if (distance <= traceDist)
         {
+<<<<<<< Updated upstream
             state = State.TRACE;
         }
         else
         {
             state = State.DIE;
+=======
+            switch(state)
+            {
+                case State.IDLE:
+                    // 추적 중지
+                    agent.isStopped = true;
+
+                    anim.SetBool(hashTrace, false);
+                    
+                    break;
+
+                case State.TRACE:
+                    // 플레이어한테 추적 시작
+                    agent.SetDestination(playerTr.position);
+                    agent.isStopped = false;
+
+                    anim.SetBool(hashTrace, true);
+                    anim.SetBool(hashAttack, false);
+
+                    break;
+
+                case State.ATTACK:
+
+                    anim.SetBool(hashAttack, true);
+                    break;
+
+                case State.DIE:
+                    break;
+            }
+            yield return new WaitForSeconds(0.3f);
+>>>>>>> Stashed changes
         }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("BULLET"))
+        {
+            Destroy(collision.gameObject);
+            // 피격 리액션 애니메이션 실행
+            anim.SetTrigger(hashHit);
+        }    
     }
 
     void OnDrawGizmos()
