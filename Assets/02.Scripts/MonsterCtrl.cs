@@ -6,6 +6,7 @@ using UnityEngine.AI;
 
 public class MonsterCtrl : MonoBehaviour
 {
+
     public enum State
     {
         IDLE,
@@ -13,12 +14,15 @@ public class MonsterCtrl : MonoBehaviour
         ATTACK,
         DIE
     }
-    
-    public State state = State.IDLE;
-    public float traceDist = 10.0f;
-    public float attackDist = 2.0f;
-    public bool isDie = false;
 
+    public State state = State.IDLE;
+
+    public float traceDist = 10.0f;
+
+    public float attackDist = 2.0f;
+
+    public bool isDie = false;
+    
     private Transform monsterTr;
     private Transform playerTr;
     private NavMeshAgent agent;
@@ -29,25 +33,15 @@ public class MonsterCtrl : MonoBehaviour
     private readonly int hashAttack = Animator.StringToHash("isAttack");
     private readonly int hashHit = Animator.StringToHash("Hit");
 
-
-    // Start is called before the first frame update
     void Start()
     {
         monsterTr = GetComponent<Transform>();
-
-        // 플레이어의 컴포넌트 참조. 태그로 구분.
+        
+        // FindWithTag 함수로 플레이어 오브젝트 주소 반환받고 겟컴포넌트로 트랜스폼 할당, 속도가 느린 연산이므로 업데이트에서는 사용 ㄴㄴ
         playerTr = GameObject.FindWithTag("PLAYER").GetComponent<Transform>();
-    
-        // NavMeshAgent 컴포넌트 할당
+        
         agent = GetComponent<NavMeshAgent>();
 
-<<<<<<< Updated upstream
-        // 추적 대상의 위치를 설정하고 바로 추적 시작;
-        agent.destination = playerTr.position;
-
-        StartCoroutine(CheckMonsterState());
-    
-=======
         anim = GetComponent<Animator>();
 
         // 추적 대상의 위치를 destination(목적지)에 설정
@@ -61,28 +55,37 @@ public class MonsterCtrl : MonoBehaviour
     void Update()
     {
         Debug.Log("Update is Called");
->>>>>>> Stashed changes
     }
 
     IEnumerator CheckMonsterState()
     {
-        yield return new WaitForSeconds(0.3f);
+        while(!isDie)
+        {
+            yield return new WaitForSeconds(0.3f);
 
-        float distance = Vector3.Distance(playerTr.position, monsterTr.position);
+            float distance = Vector3.Distance(playerTr.position, monsterTr.position);
 
-        if (distance < attackDist)
-        {
-            state = State.ATTACK;
+            if (distance < attackDist)
+            {
+                state = State.ATTACK;
+            }
+            else if (distance < traceDist)
+            {
+                state = State.TRACE;
+            }
+            else
+            {
+                state = State.IDLE;
+            }
+
         }
-        else if (distance <= traceDist)
+
+    }
+
+    IEnumerator MonsterAction()
+    {
+        while(!isDie)
         {
-<<<<<<< Updated upstream
-            state = State.TRACE;
-        }
-        else
-        {
-            state = State.DIE;
-=======
             switch(state)
             {
                 case State.IDLE:
@@ -112,8 +115,8 @@ public class MonsterCtrl : MonoBehaviour
                     break;
             }
             yield return new WaitForSeconds(0.3f);
->>>>>>> Stashed changes
         }
+
     }
 
     void OnCollisionEnter(Collision collision)
@@ -132,13 +135,11 @@ public class MonsterCtrl : MonoBehaviour
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, traceDist);
-        }    
-
+        }
         if (state == State.ATTACK)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.position, attackDist);
+            Gizmos.DrawWireSphere(transform.position, attackDist);
         }
     }
-
 }
