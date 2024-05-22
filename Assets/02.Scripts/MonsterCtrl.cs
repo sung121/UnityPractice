@@ -102,13 +102,13 @@ public class MonsterCtrl : MonoBehaviour
                     agent.isStopped = false;
 
                     anim.SetBool(hashTrace, true);
-                    anim.SetBool(hashAttack, false);
+                    anim.SetBool("isAttack", false);
 
                     break;
 
                 case State.ATTACK:
 
-                    anim.SetBool(hashAttack, true);
+                    anim.SetBool("isAttack", true);
                     break;
 
                 case State.DIE:
