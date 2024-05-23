@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using UnityEngine.AI;
@@ -27,6 +28,7 @@ public class MonsterCtrl : MonoBehaviour
     private Transform playerTr;
     private NavMeshAgent agent;
     private Animator anim;
+    private GameObject bloodEffect;
 
     // Animator 파라미터의 해시값 추출
     private readonly int hashTrace = Animator.StringToHash("isTrace");
@@ -47,6 +49,9 @@ public class MonsterCtrl : MonoBehaviour
         // 추적 대상의 위치를 destination(목적지)에 설정
         //agent.destination = playerTr.position;
 
+        //BloodSparyEffect 프리팹 로드
+        bloodEffect = Resources.Load<GameObject>("BloodSprayEffect");
+
         StartCoroutine(CheckMonsterState());
         StartCoroutine(MonsterAction());
     }
@@ -64,7 +69,6 @@ public class MonsterCtrl : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
 
             float distance = Vector3.Distance(playerTr.position, monsterTr.position);
-
             if (distance < attackDist)
             {
                 state = State.ATTACK;
@@ -84,7 +88,8 @@ public class MonsterCtrl : MonoBehaviour
 
     IEnumerator MonsterAction()
     {
-        while(!isDie)
+
+        while (!isDie)
         {
             switch(state)
             {
@@ -102,13 +107,12 @@ public class MonsterCtrl : MonoBehaviour
                     agent.isStopped = false;
 
                     anim.SetBool(hashTrace, true);
-                    anim.SetBool("isAttack", false);
+                    anim.SetBool(hashAttack, false);
 
                     break;
 
                 case State.ATTACK:
-
-                    anim.SetBool("isAttack", true);
+                    anim.SetBool(hashAttack, true);
                     break;
 
                 case State.DIE:
@@ -125,8 +129,22 @@ public class MonsterCtrl : MonoBehaviour
         {
             Destroy(collision.gameObject);
             // 피격 리액션 애니메이션 실행
+            // 트리거 파라미터는 좀 특별한 친구임.
+            // 한 번 딸깍하고 바로 꺼지는? 그런 너낌스
             anim.SetTrigger(hashHit);
+
+            Vector3 pos = collision.GetContact(0).point;
+
+            Quaternion rot = Quaternion.LookRotation(-collision.GetContact(0).normal);
+            ShowBloodEffect(pos, rot);
         }    
+    }
+
+    void ShowBloodEffect(Vector3 pos, Quaternion rot)
+    {
+        // 혈흔 효과 생성
+        Instantiate(bloodEffect, pos, rot, monsterTr);
+        Destroy(bloodEffect, 1.0f);
     }
 
     void OnDrawGizmos()
