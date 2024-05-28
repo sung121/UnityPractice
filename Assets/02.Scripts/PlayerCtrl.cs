@@ -10,8 +10,13 @@ public class PlayerCtrl : MonoBehaviour
     public float moveSpeed = 10.0f;
     public float turnSpeed = 80.0f;
 
+    private readonly float initHp = 100.0f;
+
+    public float currentHp;
+
     IEnumerator Start()
     {
+        currentHp = initHp;
         tr = GetComponent<Transform>();
         anim = GetComponent<Animation>();
 
@@ -64,4 +69,27 @@ public class PlayerCtrl : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider collider)
+    {
+        if (currentHp >= 0.0f && collider.CompareTag("PUNCH"))
+        {
+            currentHp -= 10.0f;
+            Debug.Log($"Player hp = {currentHp/initHp}");
+
+            if (currentHp <= 0.0f)
+            {
+                PlayerDie();
+            }
+        }    
+    }
+
+    void PlayerDie()
+    {
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag("MONSTER");
+        foreach(GameObject monster in monsters)
+        {
+            monster.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
+        }
+        Debug.Log("Player Die!");
+    }
 }

@@ -34,6 +34,7 @@ public class MonsterCtrl : MonoBehaviour
     private readonly int hashTrace = Animator.StringToHash("isTrace");
     private readonly int hashAttack = Animator.StringToHash("isAttack");
     private readonly int hashHit = Animator.StringToHash("Hit");
+    private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
 
     void Start()
     {
@@ -59,7 +60,6 @@ public class MonsterCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("Update is Called");
     }
 
     IEnumerator CheckMonsterState()
@@ -140,11 +140,25 @@ public class MonsterCtrl : MonoBehaviour
         }    
     }
 
+    void OnTriggerStay(Collider other)
+    {
+        Debug.Log(other.gameObject.name);
+    }
+
     void ShowBloodEffect(Vector3 pos, Quaternion rot)
     {
         // Ç÷Èç È¿°ú »ý¼º
-        Instantiate(bloodEffect, pos, rot, monsterTr);
-        Destroy(bloodEffect, 1.0f);
+        GameObject blood = Instantiate(bloodEffect, pos, rot, monsterTr);
+        Destroy(blood, 1.0f);
+        Debug.Log("ShowBloodEfefect Called!");
+    }
+
+    void OnPlayerDie()
+    {
+        StopAllCoroutines();
+
+        agent.isStopped = true;
+        anim.SetTrigger(hashPlayerDie);
     }
 
     void OnDrawGizmos()
