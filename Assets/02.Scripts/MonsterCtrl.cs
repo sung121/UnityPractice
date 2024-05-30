@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -35,6 +36,20 @@ public class MonsterCtrl : MonoBehaviour
     private readonly int hashAttack = Animator.StringToHash("isAttack");
     private readonly int hashHit = Animator.StringToHash("Hit");
     private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
+    private readonly int hashSpeed = Animator.StringToHash("Speed");
+    private readonly int hashDie = Animator.StringToHash("Die");
+
+    private int hp = 100;
+
+    void OnEnable()
+    {
+        PlayerCtrl.OnPlayerDie += this.OnPlayerDie;
+    }
+
+    void OnDisable()
+    {
+        PlayerCtrl.OnPlayerDie -= this.OnPlayerDie;    
+    }
 
     void Start()
     {
@@ -60,13 +75,17 @@ public class MonsterCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
     }
 
     IEnumerator CheckMonsterState()
     {
         while(!isDie)
         {
+            // 유니티 엔진한테 스레드를 넘겨줌
             yield return new WaitForSeconds(0.3f);
+
+            if (state == State.DIE) yield break;
 
             float distance = Vector3.Distance(playerTr.position, monsterTr.position);
             if (distance < attackDist)
@@ -116,6 +135,12 @@ public class MonsterCtrl : MonoBehaviour
                     break;
 
                 case State.DIE:
+                    isDie = true;
+
+                    agent.isStopped = true;
+
+                    anim.SetTrigger(hashDie);
+                    GetComponent<CapsuleCollider>().enabled = false;
                     break;
             }
             yield return new WaitForSeconds(0.3f);
@@ -137,6 +162,14 @@ public class MonsterCtrl : MonoBehaviour
 
             Quaternion rot = Quaternion.LookRotation(-collision.GetContact(0).normal);
             ShowBloodEffect(pos, rot);
+
+            hp -= 10;
+            Debug.Log(hp);
+            if (hp <= 0) 
+            {
+                state = State.DIE;
+            }
+
         }    
     }
 
@@ -150,7 +183,6 @@ public class MonsterCtrl : MonoBehaviour
         // 혈흔 효과 생성
         GameObject blood = Instantiate(bloodEffect, pos, rot, monsterTr);
         Destroy(blood, 1.0f);
-        Debug.Log("ShowBloodEfefect Called!");
     }
 
     void OnPlayerDie()
@@ -158,6 +190,9 @@ public class MonsterCtrl : MonoBehaviour
         StopAllCoroutines();
 
         agent.isStopped = true;
+
+        anim.SetFloat(hashSpeed, UnityEngine.Random.Range(0.8f, 1.2f));
+
         anim.SetTrigger(hashPlayerDie);
     }
 

@@ -14,6 +14,9 @@ public class PlayerCtrl : MonoBehaviour
 
     public float currentHp;
 
+    public delegate void PlayerDieHandler();
+    public static event PlayerDieHandler OnPlayerDie;
+
     IEnumerator Start()
     {
         currentHp = initHp;
@@ -25,6 +28,7 @@ public class PlayerCtrl : MonoBehaviour
         turnSpeed = 0.0f;
         yield return new WaitForSeconds(0.3f);
         turnSpeed = 80.0f;
+        //OnPlayerDie = GameObject.FindGameObjectWithTag("MONSTER").GetComponent<MonsterCtrl>();
 
     }
 
@@ -85,11 +89,13 @@ public class PlayerCtrl : MonoBehaviour
 
     void PlayerDie()
     {
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("MONSTER");
-        foreach(GameObject monster in monsters)
-        {
-            monster.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
-        }
         Debug.Log("Player Die!");
+        //GameObject[] monsters = GameObject.FindGameObjectsWithTag("MONSTER");
+        //foreach(GameObject monster in monsters)
+        //{
+        //    monster.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
+        //}
+
+        OnPlayerDie();
     }
 }
