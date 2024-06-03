@@ -39,11 +39,13 @@ public class MonsterCtrl : MonoBehaviour
     private readonly int hashSpeed = Animator.StringToHash("Speed");
     private readonly int hashDie = Animator.StringToHash("Die");
 
-    private int hp = 100;
-
+    public int hp = 100;
     void OnEnable()
     {
         PlayerCtrl.OnPlayerDie += this.OnPlayerDie;
+
+        StartCoroutine(CheckMonsterState());
+        StartCoroutine(MonsterAction());
     }
 
     void OnDisable()
@@ -51,7 +53,7 @@ public class MonsterCtrl : MonoBehaviour
         PlayerCtrl.OnPlayerDie -= this.OnPlayerDie;    
     }
 
-    void Start()
+    void Awake()
     {
         monsterTr = GetComponent<Transform>();
         
@@ -62,14 +64,15 @@ public class MonsterCtrl : MonoBehaviour
 
         anim = GetComponent<Animator>();
 
-        // 추적 대상의 위치를 destination(목적지)에 설정
-        //agent.destination = playerTr.position;
-
         //BloodSparyEffect 프리팹 로드
         bloodEffect = Resources.Load<GameObject>("BloodSprayEffect");
 
-        StartCoroutine(CheckMonsterState());
-        StartCoroutine(MonsterAction());
+    }
+
+
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
@@ -140,7 +143,30 @@ public class MonsterCtrl : MonoBehaviour
                     agent.isStopped = true;
 
                     anim.SetTrigger(hashDie);
-                    GetComponent<CapsuleCollider>().enabled = false;
+
+                    GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("PUNCH");
+                    foreach (GameObject gameObject in gameObjects) 
+                    {
+                        gameObject.GetComponent<SphereCollider>().enabled = false;
+                    }
+
+                    yield return new WaitForSeconds(3.0f);
+
+                    hp = 100;
+                    isDie = false;
+
+                    state = State.IDLE;
+
+                    GetComponent<CapsuleCollider>().enabled = true;
+
+                    foreach (GameObject gameObject in gameObjects)
+                    {
+                        gameObject.GetComponent<SphereCollider>().enabled = true;
+                    }
+
+                    this.gameObject.SetActive(false);
+
+
                     break;
             }
             yield return new WaitForSeconds(0.3f);
@@ -167,7 +193,9 @@ public class MonsterCtrl : MonoBehaviour
             Debug.Log(hp);
             if (hp <= 0) 
             {
+                GetComponent<CapsuleCollider>().enabled = false;
                 state = State.DIE;
+                GameManager.instance.DisplayeScore(50);
             }
 
         }    

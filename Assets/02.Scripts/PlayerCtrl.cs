@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerCtrl : MonoBehaviour
 {
@@ -17,8 +18,12 @@ public class PlayerCtrl : MonoBehaviour
     public delegate void PlayerDieHandler();
     public static event PlayerDieHandler OnPlayerDie;
 
+    private Image hpBar;
+
     IEnumerator Start()
     {
+        hpBar = GameObject.FindWithTag("HP_BAR")?.GetComponent<Image>();
+
         currentHp = initHp;
         tr = GetComponent<Transform>();
         anim = GetComponent<Animation>();
@@ -78,6 +83,7 @@ public class PlayerCtrl : MonoBehaviour
         if (currentHp >= 0.0f && collider.CompareTag("PUNCH"))
         {
             currentHp -= 10.0f;
+            DisplayHealth();
             Debug.Log($"Player hp = {currentHp/initHp}");
 
             if (currentHp <= 0.0f)
@@ -96,6 +102,13 @@ public class PlayerCtrl : MonoBehaviour
         //    monster.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
         //}
 
+        GameManager.instance.IsGameOver = true;
+
         OnPlayerDie();
+    }
+
+    void DisplayHealth()
+    {
+        hpBar.fillAmount = currentHp / initHp;
     }
 }
