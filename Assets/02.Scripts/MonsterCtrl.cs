@@ -175,30 +175,28 @@ public class MonsterCtrl : MonoBehaviour
     }
 
     void OnCollisionEnter(Collision collision)
+    {    
+    }
+
+    public void OnDamage(Vector3 pos, Vector3 normal)
     {
-        if (collision.collider.CompareTag("BULLET"))
+        anim.SetTrigger(hashHit);
+
+        // 피격 리액션 애니메이션 실행
+        // 트리거 파라미터는 좀 특별한 친구임.
+        // 한 번 딸깍하고 바로 꺼지는? 그런 너낌스
+
+        Quaternion rot = Quaternion.LookRotation(normal);
+        ShowBloodEffect(pos, rot);
+
+        hp -= 30;
+        Debug.Log(hp);
+        if (hp <= 0)
         {
-            Destroy(collision.gameObject);
-            // 피격 리액션 애니메이션 실행
-            // 트리거 파라미터는 좀 특별한 친구임.
-            // 한 번 딸깍하고 바로 꺼지는? 그런 너낌스
-            anim.SetTrigger(hashHit);
-
-            Vector3 pos = collision.GetContact(0).point;
-
-            Quaternion rot = Quaternion.LookRotation(-collision.GetContact(0).normal);
-            ShowBloodEffect(pos, rot);
-
-            hp -= 10;
-            Debug.Log(hp);
-            if (hp <= 0) 
-            {
-                GetComponent<CapsuleCollider>().enabled = false;
-                state = State.DIE;
-                GameManager.instance.DisplayeScore(50);
-            }
-
-        }    
+            GetComponent<CapsuleCollider>().enabled = false;
+            state = State.DIE;
+            GameManager.instance.DisplayeScore(50);
+        }
     }
 
     void OnTriggerStay(Collider other)

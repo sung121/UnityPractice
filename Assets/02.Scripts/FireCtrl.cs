@@ -20,6 +20,8 @@ public class FireCtrl : MonoBehaviour
 
     private MeshRenderer muzzleFlash;
 
+    private RaycastHit hit;
+
     void Start()
     {
         audio = GetComponent<AudioSource>();
@@ -32,16 +34,39 @@ public class FireCtrl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.DrawRay(fireTransform.position, fireTransform.forward * 10.0f, Color.green);
+
         if (Input.GetMouseButtonDown(0)) 
         {
             Fire();
+
+            if(Physics.Raycast(fireTransform.position, fireTransform.forward, out hit, 10.0f, LayerMask.GetMask("MONSTER_BODY", "BARREL") ));
+            {
+                if (hit.transform == null)
+                {
+                    return;
+                }
+                GameObject hitThing = hit.transform.gameObject;
+
+                if (hitThing.tag == "MONSTER")
+                {
+                    Debug.Log("Hit");
+                    hitThing.GetComponent<MonsterCtrl>()?.OnDamage(hit.point, hit.normal);
+                }
+                Debug.Log(LayerMask.LayerToName(hit.transform.gameObject.layer));
+                if (LayerMask.LayerToName(hit.transform.gameObject.layer) == "BARREL")
+                {
+                    Debug.Log("Hit");
+                    hitThing.GetComponent<BarrelCtrl>()?.OnDamage();
+                }
+            }
         }
     }
 
     void Fire()
     {
         // Bullet 프리팹을 동적으로 생성(생성할 객체, 위치, 회전)
-        Instantiate(bullet, fireTransform.position, fireTransform.rotation);
+        //Instantiate(bullet, fireTransform.position, fireTransform.rotation);
 
         audio.PlayOneShot(fireSfx, 1.0f);
 

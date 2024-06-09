@@ -32,6 +32,11 @@ public class BarrelCtrl : MonoBehaviour
         renderer.material.mainTexture = textures[idx];
     }
 
+    private void Update()
+    {
+        Debug.Log(rb.velocity);
+    }
+
 
     void OnCollisionEnter(Collision collision)
     {
@@ -41,6 +46,14 @@ public class BarrelCtrl : MonoBehaviour
             {
                 ExpBarrel();
             }
+        }
+    }
+
+    public void OnDamage()
+    {
+        if (++hitCount == 3)
+        {
+            ExpBarrel();
         }
     }
     

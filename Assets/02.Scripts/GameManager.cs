@@ -61,6 +61,8 @@ public class GameManager : MonoBehaviour
         CreateMonsterPool();
         Transform spawnPointGroup = GameObject.Find("SpawnPointGroup")?.transform;
 
+        Debug.Log(spawnPointGroup.position);
+
         // SpawnPointGroup 하위에 있는 모든 차일드 게임오브젝트의 Transform 컴포넌트 추출
         //spawnPointGroup?.GetComponentsInChildren<Transform>(points);
 
