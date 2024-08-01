@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// ê¹ƒ ì—°ìŠµì„ ìœ„í•œ ì£¼ì„.
 public class BarrelCtrl : MonoBehaviour
 {
     public GameObject expEffect;
 
     public Texture[] textures;
 
-    //Æø¹ß ¹İ°æ
+    //í­ë°œ ë°˜ê²½
     public float radius = 10.0f;
 
     private new MeshRenderer renderer; 
@@ -25,10 +27,10 @@ public class BarrelCtrl : MonoBehaviour
 
         renderer = GetComponentInChildren<MeshRenderer>();
         
-        //³­¼ö ¹ß»ı
+        //ë‚œìˆ˜ ë°œìƒ
         int idx = Random.Range(0, textures.Length);
 
-        // ÅØ½ºÃ³ ÁöÁ¤
+        // í…ìŠ¤ì²˜ ì§€ì •
         renderer.material.mainTexture = textures[idx];
     }
 
@@ -59,7 +61,7 @@ public class BarrelCtrl : MonoBehaviour
     
     void ExpBarrel()
     {
-        // Æø¹ß È¿°ú ÆÄÆ¼Å¬ »ı¼º
+        // í­ë°œ íš¨ê³¼ íŒŒí‹°í´ ìƒì„±
         GameObject exp = Instantiate(expEffect, tr.position, Quaternion.identity);
 
         Destroy(exp, 3.0f);
@@ -75,21 +77,21 @@ public class BarrelCtrl : MonoBehaviour
 
     void IndirectDamage(Vector3 pos)
     {
-        // ÁÖº¯ µå·³Åë ÃßÃâ
+        // ì£¼ë³€ ë“œëŸ¼í†µ ì¶”ì¶œ
         Collider[] colls = Physics.OverlapSphere(pos, radius, 1 << 3);
         
         foreach(var coll in colls)
         {
-            // Æø¹ß ¹üÀ§¿¡ Æ÷ÇÔµÈ µå·³Åë rb ÃßÃâ
+            // í­ë°œ ë²”ìœ„ì— í¬í•¨ëœ ë“œëŸ¼í†µ rb ì¶”ì¶œ
             rb = coll.GetComponent<Rigidbody>();
 
-            // µå·³Åë ¹«°Ô °¡º±°Ô
+            // ë“œëŸ¼í†µ ë¬´ê²Œ ê°€ë³ê²Œ
             rb.mass = 1.0f;
             
-            // freeze rotation Á¦ÇÑ ÇØÁ¦
+            // freeze rotation ì œí•œ í•´ì œ
             rb.constraints = RigidbodyConstraints.None;
 
-            // Æø¹ß·Â Àü´Ş
+            // í­ë°œë ¥ ì „ë‹¬
             rb.AddExplosionForce(2500.0f, pos, radius, 1200.0f);
         }
     }
