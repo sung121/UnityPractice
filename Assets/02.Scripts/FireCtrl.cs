@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-// ¹İµå½Ã ÇÊ¿äÇÑ ÄÄÆ÷³ÍÆ® ¸í½ÃÇØ ÇØ´ç ÄÄÆ÷³ÍÆ®°¡ »èÁ¦µÇ´Â °ÍÀ» ¹æÁöÇÏ´Â ¾îÆ®¸®ºäÆ®
+// ï¿½İµï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½Æ®
+// ë¡œì»¬ ì €ì¥ì†Œì—ì„œ ê±´ë“¬~~~~~~
 [RequireComponent (typeof (AudioSource))]
 
 public class FireCtrl : MonoBehaviour
 {
-    // ÃÑ¾Ë ÇÁ¸®ÆÕ
+    // ï¿½Ñ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public GameObject bullet;
 
-    // ÃÑ¾Ë ¹ß»ç ÁÂÇ¥
+    // ï¿½Ñ¾ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½Ç¥
     public Transform fireTransform;
 
     public AudioClip fireSfx;
@@ -65,7 +66,7 @@ public class FireCtrl : MonoBehaviour
 
     void Fire()
     {
-        // Bullet ÇÁ¸®ÆÕÀ» µ¿ÀûÀ¸·Î »ı¼º(»ı¼ºÇÒ °´Ã¼, À§Ä¡, È¸Àü)
+        // Bullet ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼, ï¿½ï¿½Ä¡, È¸ï¿½ï¿½)
         //Instantiate(bullet, fireTransform.position, fireTransform.rotation);
 
         audio.PlayOneShot(fireSfx, 1.0f);
@@ -74,26 +75,26 @@ public class FireCtrl : MonoBehaviour
 
     }
 
-        // ÄÚ·çÆ¾ ÇÔ¼öÀÓ.
+        // ï¿½Ú·ï¿½Æ¾ ï¿½Ô¼ï¿½ï¿½ï¿½.
     IEnumerator ShowMuzzleFlash()
     {
-        // ¿ÀÇÁ¼Â ÁÂÇ©°ªÀ» ·£´ı ÇÔ¼ö·Î »ı¼º
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç©ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector2 offset = new Vector2(Random.Range(0, 2), Random.Range(0, 2)) * 0.5f;
 
         muzzleFlash.material.mainTextureOffset = offset;
 
-        // MuzzleFlashÀÇ È¸Àü º¯°æ
+        // MuzzleFlashï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         float angle = Random.Range(0, 360);
-        // Euler(¿ÀÀÏ·¯¶ó´Â ÀÇ¹Ì ) = ¿ÀÀÏ·¯°¢À» ÄõÅÍ´Ï¾ğ º¯È¯ÇØÁÖ´Â ÇÔ¼ö
+        // Euler(ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¹ï¿½ ) = ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í´Ï¾ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½
         muzzleFlash.transform.localRotation = Quaternion.Euler(0, 0, angle);
 
-        // MuzzleFlash Å©±â Á¶Àı
+        // MuzzleFlash Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         float scale = Random.Range(1.0f, 2.0f);
         muzzleFlash.transform.localScale = Vector3.one * scale;
 
         muzzleFlash.enabled = true;
 
-        // ÃÑ±¸¸¦ º¸¿©ÁÖ´Â ½Ã°£.
+        // ï¿½Ñ±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ã°ï¿½.
         yield return new WaitForSeconds(0.2f);
 
         muzzleFlash.enabled = false;
